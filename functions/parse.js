@@ -1,4 +1,3 @@
-import * as XLSX from 'xlsx';
 
 export async function onRequestPost(context) {
   const contentType = context.request.headers.get('content-type') || '';
@@ -28,18 +27,6 @@ export async function onRequestPost(context) {
       result = {
         type: 'text',
         parsed: text,
-      };
-    } else if (contentType.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
-      // 解析 Excel 文件（.xlsx）
-      const data = new Uint8Array(arrayBuffer);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheets = {};
-      workbook.SheetNames.forEach(name => {
-        sheets[name] = XLSX.utils.sheet_to_json(workbook.Sheets[name], { header: 1 });
-      });
-      result = {
-        type: 'excel',
-        parsed: sheets,
       };
     } else {
       // 其他类型只返回文件大小
