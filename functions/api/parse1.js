@@ -6,6 +6,7 @@ export async function onRequestPost(context) {
         // 将当前请求的文件数据转发到后端服务
         result0 = await context.env.JIAN.fetch(context.env.SERVICE + '/file/parse-excel',  {
             method: 'POST',
+
             headers: context.request.headers
         });
         
