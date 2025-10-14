@@ -4,12 +4,8 @@ export async function onRequestPost(context) {
     
     try {
         // 修复：正确构造 URL 而不是传递整个 context 对象
-        const url = new URL(context.request.url);
-        result0 = await context.env.JIAN.fetch(url, {
-            method: context.request.method,
-            headers: context.request.headers,
-            body: context.request.body
-        });
+
+        result0 = await context.env.JIAN.fetch(context.request);
         
         // 检查响应状态
         if (!result0.ok) {
