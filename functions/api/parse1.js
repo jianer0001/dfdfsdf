@@ -53,7 +53,6 @@ export async function onRequestPost(context) {
 
     return new Response(JSON.stringify({
         size,
-        contentType,
         result,result0,jian
     }, null, 2), {
         status: 200,
