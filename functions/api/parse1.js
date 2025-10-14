@@ -5,7 +5,7 @@ export async function onRequestPost(context) {
     try {
         // 修复：正确构造 URL 而不是传递整个 context 对象
 
-        result0 = await context.env.JIAN.fetch(context.request);
+        result0 = await fetch(context.env.SERVICE + '/test/jian');
         
         // 检查响应状态
         if (!result0.ok) {
