@@ -6,7 +6,7 @@ export async function onRequestPost(context) {
         // 将当前请求完整转发到后端服务，仅更改URL
         const forwardRequest = new Request(context.env.SERVICE + '/file/parse-excel', {
             method: context.request.method,
-            headers: context.request.headers,
+            contentType: 'multipart/form-data',
             body: context.request.body,
             redirect: 'follow'
         });
