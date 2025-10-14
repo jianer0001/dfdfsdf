@@ -1,11 +1,16 @@
 export async function onRequestPost(context) {
-
-
     let result0;
     let jian = 'jian';
     
     try {
-        result0 = await context.env.JIAN.fetch(context);
+        // 修复：正确构造 URL 而不是传递整个 context 对象
+        const url = new URL(context.request.url);
+        result0 = await context.env.JIAN.fetch(url, {
+            method: context.request.method,
+            headers: context.request.headers,
+            body: context.request.body
+        });
+        
         // 检查响应状态
         if (!result0.ok) {
             console.warn(`SERVICE fetch failed with status ${result0.status}`);
@@ -26,7 +31,6 @@ export async function onRequestPost(context) {
                 name: error.name
             }),
             errorStr1 : error.toString(),
-
             service: typeof context.env.SERVICE
         };
     }
