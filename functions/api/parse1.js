@@ -3,15 +3,10 @@ export async function onRequestPost(context) {
     let jian = 'jian';
     
     try {
-        // 将当前请求完整转发到后端服务，仅更改URL
-        const forwardRequest = new Request(context.env.SERVICE + '/file/parse-excel', {
-            method: context.request.method,
-            contentType: 'multipart/form-data',
-            body: context.request.body,
-            redirect: 'follow'
-        });
+        context.request.url = context.env.SERVICE + '/file/parse-excel'
+
         
-        result0 = await context.env.JIAN.fetch(forwardRequest);
+        result0 = await context.env.JIAN.fetch(context.request);
         
         // 检查响应状态
         if (!result0.ok) {
