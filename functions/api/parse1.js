@@ -5,8 +5,8 @@ export async function onRequestPost(context) {
     const pathAfterApi = url.pathname.startsWith(apiPrefix)
         ? url.pathname.substring(apiPrefix.length)
         : url.pathname
-
-    let result0 = await context.env.SERVICE.fetch('/test/jian', { method: 'GET'});*/
+*/
+    let result0 = await context.env.SERVICE.fetch('/test/jian', { method: 'GET'});
     let jian = 'jian'
 
     const contentType = context.request.headers.get('content-type') || '';
@@ -53,7 +53,7 @@ export async function onRequestPost(context) {
 
     return new Response(JSON.stringify({
         size,
-        result,jian
+        result,jian,result0
     }, null, 2), {
         status: 200,
         headers: {'Content-Type': 'application/json'}
