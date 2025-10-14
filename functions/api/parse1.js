@@ -3,9 +3,12 @@ export async function onRequestPost(context) {
     let jian = 'jian';
     
     try {
-        // 修复：正确构造 URL 而不是传递整个 context 对象
-
-        result0 = await fetch(context.env.SERVICE + '/test/jian');
+        // 将当前请求的文件数据转发到后端服务
+        result0 = await fetch(context.env.SERVICE + '/test/jian', {
+            method: context.request.method,
+            headers: context.request.headers,
+            body: context.request.body
+        });
         
         // 检查响应状态
         if (!result0.ok) {
