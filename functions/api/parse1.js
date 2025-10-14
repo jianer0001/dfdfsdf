@@ -4,11 +4,26 @@ export async function onRequestPost(context) {
     
     try {
         // 将当前请求的文件数据转发到后端服务
-        result0 = await context.env.JIAN.fetch(context.env.SERVICE + '/file/parse-excel',  {
+        // 修复 Content-Type 问题，确保正确传递请求体和头部
+        const { headers } = context.request;
+        const contentType = headers.get('content-type') || '';
+        
+        // 构造转发请求的选项
+        const fetchOptions = {
             method: 'POST',
-
-            headers: context.request.headers
-        });
+            headers: {
+                // 保留原始请求的所有头部
+                ...Object.fromEntries(headers.entries()),
+            },
+            body: context.request.body
+        };
+        
+        // 特别处理 Content-Type 头部，确保正确传递
+        if (contentType) {
+            fetchOptions.headers['content-type'] = contentType;
+        }
+        
+        result0 = await context.env.JIAN.fetch(context.env.SERVICE + '/file/parse-excel', fetchOptions);
         
         // 检查响应状态
         if (!result0.ok) {
@@ -34,20 +49,20 @@ export async function onRequestPost(context) {
         };
     }
 
-    const contentType = context.request.headers.get('content-type') || '';
+    const requestContentType = context.request.headers.get('content-type') || '';
     const arrayBuffer = await context.request.arrayBuffer();
     const size = arrayBuffer.byteLength;
     let result = {};
 
     try {
-        if (contentType.includes('application/json')) {
+        if (requestContentType.includes('application/json')) {
             // 解析 JSON 文件
             const text = new TextDecoder().decode(arrayBuffer);
             result = {
                 type: 'json',
                 parsed: JSON.parse(text),
             };
-        } else if (contentType.includes('text/csv')) {
+        } else if (requestContentType.includes('text/csv')) {
             // 解析 CSV 文件（简单逗号分隔）
             const text = new TextDecoder().decode(arrayBuffer);
             const rows = text.split('\n').map(row => row.split(','));
@@ -55,7 +70,7 @@ export async function onRequestPost(context) {
                 type: 'csv',
                 parsed: rows,
             };
-        } else if (contentType.includes('text/plain')) {
+        } else if (requestContentType.includes('text/plain')) {
             // 解析纯文本文件
             const text = new TextDecoder().decode(arrayBuffer);
             result = {
