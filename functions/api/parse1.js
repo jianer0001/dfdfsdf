@@ -2,18 +2,67 @@ export async function onRequestPost(context) {
     // 创建一个对象来存储 JIAN 的属性
     let jianProperties = {};
     
-    // 打印 context.env.JIAN 对象的所有属性
+    // 打印 context.env.JIAN 对象的所有属性，包括不可枚举的属性
+    try {
+        // 获取所有属性（包括不可枚举的属性）
+        const allProps = Object.getOwnPropertyNames(context.env.JIAN || {});
 
+        
+        // 获取 Symbol 属性
+        const symbolProps = Object.getOwnPropertySymbols(context.env.JIAN || {});
 
-    // 检查所有可枚举属性
-    for (const prop in context.env.JIAN) {
-        if (!(prop in jianProperties)) { // 避免重复
+        
+        // 收集所有属性值
+        for (const prop of allProps) {
             try {
-                jianProperties[prop] = context.env.JIAN[prop];
+                const descriptor = Object.getOwnPropertyDescriptor(context.env.JIAN, prop);
+                if (descriptor) {
+                    if (descriptor.get) {
+                        // 如果是 getter，尝试调用它
+                        jianProperties[prop] = context.env.JIAN[prop];
+                    } else {
+                        // 直接获取值
+                        jianProperties[prop] = context.env.JIAN[prop];
+                    }
+                    console.log(`context.env.JIAN[${prop}]:`, jianProperties[prop]);
+                }
             } catch (e) {
                 jianProperties[prop] = `Cannot access value - ${e.message}`;
+                console.log(`context.env.JIAN[${prop}]: Cannot access value -`, e.message);
             }
         }
+        
+        // 处理 Symbol 属性
+        for (const sym of symbolProps) {
+            try {
+                jianProperties[sym.toString()] = context.env.JIAN[sym];
+                console.log(`context.env.JIAN[${sym.toString()}]:`, jianProperties[sym.toString()]);
+            } catch (e) {
+                jianProperties[sym.toString()] = `Cannot access value - ${e.message}`;
+                console.log(`context.env.JIAN[${sym.toString()}]: Cannot access value -`, e.message);
+            }
+        }
+        
+        // 使用 for...in 检查原型链上的属性
+        for (const prop in context.env.JIAN) {
+            if (!(prop in jianProperties)) { // 避免重复
+                try {
+                    jianProperties[prop] = context.env.JIAN[prop];
+                    console.log(`context.env.JIAN[${prop}] (from prototype chain):`, jianProperties[prop]);
+                } catch (e) {
+                    jianProperties[prop] = `Cannot access value - ${e.message}`;
+                    console.log(`context.env.JIAN[${prop}] (from prototype chain): Cannot access value -`, e.message);
+                }
+            }
+        }
+        
+        // 检查是否具有常见的 Service Binding 属性
+        console.log('context.env.JIAN has fetch:', typeof context.env.JIAN?.fetch);
+        console.log('context.env.JIAN has get:', typeof context.env.JIAN?.get);
+        console.log('context.env.JIAN has put:', typeof context.env.JIAN?.put);
+    } catch (logError) {
+        console.error('Error logging JIAN object:', logError);
+        jianProperties.error = `Error logging JIAN object: ${logError.message}`;
     }
 
     let result0;
