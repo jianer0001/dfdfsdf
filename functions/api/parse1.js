@@ -7,6 +7,7 @@ export async function onRequestPost(context) {
         : url.pathname
 
     let result0 = await context.env.SERVICE.fetch('/test/jian', { method: 'GET'});
+    let jian = 'jian'
 
     const contentType = context.request.headers.get('content-type') || '';
     const arrayBuffer = await context.request.arrayBuffer();
@@ -53,7 +54,7 @@ export async function onRequestPost(context) {
     return new Response(JSON.stringify({
         size,
         contentType,
-        result,result0
+        result,result0,jian
     }, null, 2), {
         status: 200,
         headers: {'Content-Type': 'application/json'}
