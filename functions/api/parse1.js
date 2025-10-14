@@ -10,7 +10,7 @@ export async function onRequestPost(context) {
     let jian = 'jian';
     
     try {
-        result0 = await context.env.JIAN.fetch('https://guanhen.821330378.workers.dev/test/jian', { method: 'GET' });
+        result0 = await context.env.JIAN.fetch('test/jian', { method: 'GET' });
         // 检查响应状态
         if (!result0.ok) {
             console.warn(`SERVICE fetch failed with status ${result0.status}`);
