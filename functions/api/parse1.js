@@ -1,11 +1,21 @@
 export async function onRequestPost(context) {
+    // 创建一个对象来存储 JIAN 的属性
+    let jianProperties = {};
+    
+    // 打印 context.env.JIAN 对象的所有属性
 
-/*    const url = new URL(context.request.url)
-    const apiPrefix = '/api'
-    const pathAfterApi = url.pathname.startsWith(apiPrefix)
-        ? url.pathname.substring(apiPrefix.length)
-        : url.pathname
-*/
+
+    // 检查所有可枚举属性
+    for (const prop in context.env.JIAN) {
+        if (!(prop in jianProperties)) { // 避免重复
+            try {
+                jianProperties[prop] = context.env.JIAN[prop];
+            } catch (e) {
+                jianProperties[prop] = `Cannot access value - ${e.message}`;
+            }
+        }
+    }
+
     let result0;
     let jian = 'jian';
     
@@ -94,6 +104,7 @@ export async function onRequestPost(context) {
         size,
         result,
         jian,
+        jianProperties,
         result0: processedResult0
     }, null, 2), {
         status: 200,
