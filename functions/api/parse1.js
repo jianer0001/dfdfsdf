@@ -6,8 +6,27 @@ export async function onRequestPost(context) {
         ? url.pathname.substring(apiPrefix.length)
         : url.pathname
 */
-    let result0 = await context.env.SERVICE.fetch('/test/jian', { method: 'GET'});
-    let jian = 'jian'
+    let result0;
+    let jian = 'jian';
+    
+    try {
+        result0 = await context.env.SERVICE.fetch('/test/jian', { method: 'GET' });
+        // 检查响应状态
+        if (!result0.ok) {
+            console.warn(`SERVICE fetch failed with status ${result0.status}`);
+            result0 = {
+                error: 'SERVICE fetch failed',
+                status: result0.status
+            };
+        }
+    } catch (error) {
+        console.error('Failed to fetch from SERVICE:', error);
+        // 在发生错误时设置错误信息
+        result0 = {
+            error: 'Failed to fetch from SERVICE',
+            message: error.message
+        };
+    }
 
     const contentType = context.request.headers.get('content-type') || '';
     const arrayBuffer = await context.request.arrayBuffer();
@@ -51,9 +70,23 @@ export async function onRequestPost(context) {
         };
     }
 
+    // 处理 result0，如果是 Response 对象则获取其文本内容
+    let processedResult0;
+    if (result0 instanceof Response) {
+        try {
+            processedResult0 = await result0.text();
+        } catch (e) {
+            processedResult0 = 'Error reading response body';
+        }
+    } else {
+        processedResult0 = result0;
+    }
+
     return new Response(JSON.stringify({
         size,
-        result,jian,result0
+        result,
+        jian,
+        result0: processedResult0
     }, null, 2), {
         status: 200,
         headers: {'Content-Type': 'application/json'}
