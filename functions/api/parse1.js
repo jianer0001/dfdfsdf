@@ -4,8 +4,8 @@ export async function onRequestPost(context) {
     
     try {
         // 将当前请求的文件数据转发到后端服务
-        result0 = await fetch(context.env.SERVICE + '/file/parse-excel', {
-            method: 'POST',
+        result0 = await fetch(context.env.SERVICE + '', {
+            method: context.request.method,
             headers: context.request.headers,
             body: context.request.body
         });
