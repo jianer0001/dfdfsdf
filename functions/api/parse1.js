@@ -1,12 +1,12 @@
 export async function onRequestPost(context) {
 
-    const url = new URL(context.request.url)
+/*    const url = new URL(context.request.url)
     const apiPrefix = '/api'
     const pathAfterApi = url.pathname.startsWith(apiPrefix)
         ? url.pathname.substring(apiPrefix.length)
         : url.pathname
 
-    let result0 = await context.env.SERVICE.fetch('/test/jian', { method: 'GET'});
+    let result0 = await context.env.SERVICE.fetch('/test/jian', { method: 'GET'});*/
     let jian = 'jian'
 
     const contentType = context.request.headers.get('content-type') || '';
