@@ -25,7 +25,13 @@ export async function onRequestPost(context) {
         result0 = {
             error: 'Failed to fetch from SERVICE',
             message: error.message,
-            errorStr : JSON.stringify(error),
+            errorStr: JSON.stringify({
+                message: error.message,
+                stack: error.stack,
+                name: error.name
+            })
+            errorStr1 : error.toString(),
+
             service: JSON.stringify(context.env.SERVICE)
         };
     }
