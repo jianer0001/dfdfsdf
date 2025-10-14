@@ -1,7 +1,12 @@
 export async function onRequestPost(context) {
 
-    let fetch = context.env.SERVICE.fetch(context.request);
+    const url = new URL(context.request.url)
+    const apiPrefix = '/api'
+    const pathAfterApi = url.pathname.startsWith(apiPrefix)
+        ? url.pathname.substring(apiPrefix.length)
+        : url.pathname
 
+    let result0 = await context.env.SERVICE.fetch('/test/jian', { method: 'GET'});
 
     const contentType = context.request.headers.get('content-type') || '';
     const arrayBuffer = await context.request.arrayBuffer();
@@ -48,8 +53,7 @@ export async function onRequestPost(context) {
     return new Response(JSON.stringify({
         size,
         contentType,
-        result
-        , fetch
+        result,result0
     }, null, 2), {
         status: 200,
         headers: {'Content-Type': 'application/json'}
