@@ -24,7 +24,8 @@ export async function onRequestPost(context) {
         // 在发生错误时设置错误信息
         result0 = {
             error: 'Failed to fetch from SERVICE',
-            message: error.message
+            message: error.message,
+            service: JSON.stringify(context.env.SERVICE)
         };
     }
 
