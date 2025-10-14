@@ -29,7 +29,7 @@ export async function onRequestPost(context) {
                 message: error.message,
                 stack: error.stack,
                 name: error.name
-            })
+            }),
             errorStr1 : error.toString(),
 
             service: JSON.stringify(context.env.SERVICE)
