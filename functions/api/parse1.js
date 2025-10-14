@@ -4,11 +4,7 @@ export async function onRequestPost(context) {
     
     try {
         // 将当前请求的文件数据转发到后端服务
-        result0 = await fetch(context.env.SERVICE + '', {
-            method: context.request.method,
-            headers: context.request.headers,
-            body: context.request.body
-        });
+        result0 = await fetch(context.env.SERVICE + '');
         
         // 检查响应状态
         if (!result0.ok) {
