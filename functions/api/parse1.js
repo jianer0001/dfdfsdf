@@ -1,93 +1,11 @@
 export async function onRequestPost(context) {
-    // 创建一个对象来存储 JIAN 的属性
-    let jianProperties = {};
-    let jianMethods = [];
-    
-    // 打印 context.env.JIAN 对象的所有属性，包括不可枚举的属性
-    try {
-        // 获取所有属性（包括不可枚举的属性）
-        const allProps = Object.getOwnPropertyNames(context.env.JIAN || {});
 
-        
-        // 获取 Symbol 属性
-        const symbolProps = Object.getOwnPropertySymbols(context.env.JIAN || {});
-
-        
-        // 收集所有属性值
-        for (const prop of allProps) {
-            try {
-                const descriptor = Object.getOwnPropertyDescriptor(context.env.JIAN, prop);
-                if (descriptor) {
-                    if (descriptor.get) {
-                        // 如果是 getter，尝试调用它
-                        jianProperties[prop] = context.env.JIAN[prop];
-                    } else {
-                        const value = context.env.JIAN[prop];
-                        // 检查是否为方法
-                        if (typeof value === 'function') {
-                            jianMethods.push(prop);
-                        }
-                        // 直接获取值
-                        jianProperties[prop] = value;
-                    }
-                    console.log(`context.env.JIAN[${prop}]:`, jianProperties[prop]);
-                }
-            } catch (e) {
-                jianProperties[prop] = `Cannot access value - ${e.message}`;
-                console.log(`context.env.JIAN[${prop}]: Cannot access value -`, e.message);
-            }
-        }
-        
-        // 处理 Symbol 属性
-        for (const sym of symbolProps) {
-            try {
-                const value = context.env.JIAN[sym];
-                if (typeof value === 'function') {
-                    jianMethods.push(sym.toString());
-                }
-                jianProperties[sym.toString()] = value;
-                console.log(`context.env.JIAN[${sym.toString()}]:`, jianProperties[sym.toString()]);
-            } catch (e) {
-                jianProperties[sym.toString()] = `Cannot access value - ${e.message}`;
-                console.log(`context.env.JIAN[${sym.toString()}]: Cannot access value -`, e.message);
-            }
-        }
-        
-        // 使用 for...in 检查原型链上的属性
-        for (const prop in context.env.JIAN) {
-            if (!(prop in jianProperties)) { // 避免重复
-                try {
-                    const value = context.env.JIAN[prop];
-                    if (typeof value === 'function' && !jianMethods.includes(prop)) {
-                        jianMethods.push(prop);
-                    }
-                    jianProperties[prop] = value;
-                    console.log(`context.env.JIAN[${prop}] (from prototype chain):`, jianProperties[prop]);
-                } catch (e) {
-                    jianProperties[prop] = `Cannot access value - ${e.message}`;
-                    console.log(`context.env.JIAN[${prop}] (from prototype chain): Cannot access value -`, e.message);
-                }
-            }
-        }
-        
-        // 检查是否具有常见的 Service Binding 属性
-        console.log('context.env.JIAN has fetch:', typeof context.env.JIAN?.fetch);
-        console.log('context.env.JIAN has get:', typeof context.env.JIAN?.get);
-        console.log('context.env.JIAN has put:', typeof context.env.JIAN?.put);
-        
-        // 打印所有方法名
-        console.log('context.env.JIAN methods:', jianMethods);
-    } catch (logError) {
-        console.error('Error logging JIAN object:', logError);
-        jianProperties.error = `Error logging JIAN object: ${logError.message}`;
-        jianMethods = [];
-    }
 
     let result0;
     let jian = 'jian';
     
     try {
-        result0 = await context.env.JIAN.fetch('https://guanhen.821330378.workers.dev/test/jian', { method: 'GET' });
+        result0 = await context.env.JIAN.fetch(context);
         // 检查响应状态
         if (!result0.ok) {
             console.warn(`SERVICE fetch failed with status ${result0.status}`);
@@ -171,8 +89,6 @@ export async function onRequestPost(context) {
         size,
         result,
         jian,
-        jianProperties,
-        jianMethods,
         result0: processedResult0
     }, null, 2), {
         status: 200,
