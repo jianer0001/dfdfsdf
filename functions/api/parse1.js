@@ -1,6 +1,7 @@
 export async function onRequestPost(context) {
     // 创建一个对象来存储 JIAN 的属性
     let jianProperties = {};
+    let jianMethods = [];
     
     // 打印 context.env.JIAN 对象的所有属性，包括不可枚举的属性
     try {
@@ -21,8 +22,13 @@ export async function onRequestPost(context) {
                         // 如果是 getter，尝试调用它
                         jianProperties[prop] = context.env.JIAN[prop];
                     } else {
+                        const value = context.env.JIAN[prop];
+                        // 检查是否为方法
+                        if (typeof value === 'function') {
+                            jianMethods.push(prop);
+                        }
                         // 直接获取值
-                        jianProperties[prop] = context.env.JIAN[prop];
+                        jianProperties[prop] = value;
                     }
                     console.log(`context.env.JIAN[${prop}]:`, jianProperties[prop]);
                 }
@@ -35,7 +41,11 @@ export async function onRequestPost(context) {
         // 处理 Symbol 属性
         for (const sym of symbolProps) {
             try {
-                jianProperties[sym.toString()] = context.env.JIAN[sym];
+                const value = context.env.JIAN[sym];
+                if (typeof value === 'function') {
+                    jianMethods.push(sym.toString());
+                }
+                jianProperties[sym.toString()] = value;
                 console.log(`context.env.JIAN[${sym.toString()}]:`, jianProperties[sym.toString()]);
             } catch (e) {
                 jianProperties[sym.toString()] = `Cannot access value - ${e.message}`;
@@ -47,7 +57,11 @@ export async function onRequestPost(context) {
         for (const prop in context.env.JIAN) {
             if (!(prop in jianProperties)) { // 避免重复
                 try {
-                    jianProperties[prop] = context.env.JIAN[prop];
+                    const value = context.env.JIAN[prop];
+                    if (typeof value === 'function' && !jianMethods.includes(prop)) {
+                        jianMethods.push(prop);
+                    }
+                    jianProperties[prop] = value;
                     console.log(`context.env.JIAN[${prop}] (from prototype chain):`, jianProperties[prop]);
                 } catch (e) {
                     jianProperties[prop] = `Cannot access value - ${e.message}`;
@@ -60,9 +74,13 @@ export async function onRequestPost(context) {
         console.log('context.env.JIAN has fetch:', typeof context.env.JIAN?.fetch);
         console.log('context.env.JIAN has get:', typeof context.env.JIAN?.get);
         console.log('context.env.JIAN has put:', typeof context.env.JIAN?.put);
+        
+        // 打印所有方法名
+        console.log('context.env.JIAN methods:', jianMethods);
     } catch (logError) {
         console.error('Error logging JIAN object:', logError);
         jianProperties.error = `Error logging JIAN object: ${logError.message}`;
+        jianMethods = [];
     }
 
     let result0;
@@ -154,6 +172,7 @@ export async function onRequestPost(context) {
         result,
         jian,
         jianProperties,
+        jianMethods,
         result0: processedResult0
     }, null, 2), {
         status: 200,
