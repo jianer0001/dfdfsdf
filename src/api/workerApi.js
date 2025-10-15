@@ -15,7 +15,15 @@ export async function parseFile(fileBuffer) {
   try {
     // 将文件数据包装在file字段中
     const formData = new FormData();
-    const blob = new Blob([fileBuffer]);
+    // 根据fileBuffer的类型创建合适的Blob
+    let blob;
+    if (fileBuffer instanceof ArrayBuffer) {
+      blob = new Blob([fileBuffer]);
+    } else if(fileBuffer instanceof Buffer){
+      // 对于Buffer类型，需要先转换为ArrayBuffer
+      const arrayBuffer = fileBuffer.buffer.slice(fileBuffer.byteOffset, fileBuffer.byteOffset + fileBuffer.byteLength);
+      blob = new Blob([arrayBuffer]);
+    }
     formData.append('file', blob);
     
     const response = await service.post('/gh/file/parse1', formData);
