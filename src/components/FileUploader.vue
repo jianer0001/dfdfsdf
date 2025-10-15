@@ -25,7 +25,7 @@ function handleFileUpload(event) {
   // 设置文件读取完成后的回调函数
   reader.onload = async (e) => {
     // 调用API解析文件内容
-    const result = await parseFile(e.target.result);
+    const result = await parseFile(file);
     // 发送解析结果给父组件
     emit('parsed', result);
   };

@@ -2,29 +2,20 @@ import service from './http';
 
 /**
  * 解析文件内容
- * @param {ArrayBuffer|Buffer} fileBuffer - 文件的二进制数据
+ * @param {File} file - 要上传和解析的文件对象
  * @returns {Promise<any>} 解析后的数据
  * @throws {Error} 当解析失败或参数无效时抛出错误
  */
-export async function parseFile(fileBuffer) {
+export async function parseFile(file) {
   // 参数校验
-  if (!fileBuffer) {
-    throw new Error('文件数据不能为空');
+  if (!file) {
+    throw new Error('文件不能为空');
   }
   
   try {
     // 将文件数据包装在file字段中
     const formData = new FormData();
-    // 根据fileBuffer的类型创建合适的Blob
-    let blob;
-    if (fileBuffer instanceof ArrayBuffer) {
-      blob = new Blob([fileBuffer]);
-    } else if(fileBuffer instanceof Buffer){
-      // 对于Buffer类型，需要先转换为ArrayBuffer
-      const arrayBuffer = fileBuffer.buffer.slice(fileBuffer.byteOffset, fileBuffer.byteOffset + fileBuffer.byteLength);
-      blob = new Blob([arrayBuffer]);
-    }
-    formData.append('file', blob);
+    formData.append('file', file);
     
     const response = await service.post('/gh/file/parse1', formData);
     return response.data;
